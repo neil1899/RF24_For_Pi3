@@ -403,7 +403,8 @@ void RF24::print_address_register(const char* name, uint8_t reg, uint8_t qty)
   {
     uint8_t buffer[addr_width];
     read_register(reg++,buffer,sizeof buffer);
-
+    
+    printf_P("\n0x%02x:%02x:%02x:%02x:%02x\n", buffer[0], buffer[1], buffer[2], buffer[3], buffer[4]);
     printf_P(PSTR(" 0x"));
     uint8_t* bufptr = buffer + sizeof buffer;
     while( --bufptr >= buffer )

@@ -66,7 +66,7 @@ RF24 radio(RPI_V2_GPIO_P1_15, RPI_V2_GPIO_P1_24, BCM2835_SPI_SPEED_8MHZ);
 /**************************************************************/
 
 // Radio pipe addresses for the 2 nodes to communicate.
-const uint64_t addresses[2] = { 0xABCDABCD71LL, 0x544d52687CLL };
+const uint64_t addresses[2] = { 0x5510104334LL, 0x5510104334LL };
 
 
 uint8_t data[32];
@@ -115,6 +115,7 @@ int main(int argc, char** argv){
       radio.openWritingPipe(addresses[0]);
       radio.openReadingPipe(1,addresses[1]);
       radio.startListening();
+      radio.printDetails();
     }
 
 
@@ -122,6 +123,18 @@ int main(int argc, char** argv){
      data[i] = rand() % 255;               			//Load the buffer with random data
   }
 
+  data[0] = 'h';
+  data[1] = 'e';
+  data[2] = 'l';
+  data[3] = 'l';
+  data[4] = 'o';
+  data[5] = ',';
+  data[6] = 'w';
+  data[7] = 'o';
+  data[8] = 'r';
+  data[9] = 'l';
+  data[10] = 'd';
+  data[11] = '\0';
     // forever loop
     while (1){
 
@@ -134,8 +147,8 @@ int main(int argc, char** argv){
 		// unsigned long pauseTime = millis();		//Uncomment if autoAck == 1 ( NOACK )
 		startTime = millis();
 	
-		for(int i=0; i<cycles; i++){        		//Loop through a number of cycles
-      			data[0] = i;                        //Change the first byte of the payload for identification
+		//for(int i=0; i<cycles; i++){        		//Loop through a number of cycles
+      		//	data[0] = i;                        //Change the first byte of the payload for identification
       			if(!radio.writeFast(&data,32)){     //Write to the FIFO buffers
         			counter++;                      //Keep count of failed payloads
       			}
@@ -147,7 +160,7 @@ int main(int argc, char** argv){
 					radio.txStandBy();				// This gives the PLL time to sync back up	
 				}
 		*/
-		}
+		//}
 		stopTime = millis();
 
 		if(!radio.txStandBy()){ counter+=3; }
@@ -164,7 +177,9 @@ int main(int argc, char** argv){
 
 if(role == role_pong_back){
      while(radio.available()){
-      radio.read(&data,32);
+      radio.read(&data,12);
+      printf("data is %c%c%c%c%c%c%c%c%c%c%c%c%c\n", data[0], data[1], data[2], 
+	           data[3], data[4], data[5], data[6], data[7], data[8], data[9], data[10], data[11]);
       counter++;
      }
    if(millis() - rxTimer > 1000){
